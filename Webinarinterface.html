@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Group Idea Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #ECDEC9;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+      padding: 2rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Side decorations */
+    .side-deco {
+      position: fixed;
+      top: 0; bottom: 0;
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.8rem;
+      pointer-events: none;
+    }
+    .side-deco.left { left: 0; }
+    .side-deco.right { right: 0; }
+
+    .deco-line {
+      width: 1px;
+      height: 80px;
+      background: linear-gradient(to bottom, transparent, #a0785a, transparent);
+    }
+    .deco-diamond {
+      width: 10px; height: 10px;
+      background: #c8a87a;
+      transform: rotate(45deg);
+      opacity: 0.7;
+    }
+    .deco-circle {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      border: 1.5px solid #a0785a;
+      opacity: 0.6;
+    }
+    .deco-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #8b6347;
+      opacity: 0.5;
+    }
+    .deco-leaf {
+      font-size: 1.1rem;
+      opacity: 0.35;
+      transform: rotate(-20deg);
+    }
+    .side-deco.right .deco-leaf { transform: rotate(20deg); }
+
+    .card {
+      background: rgba(255, 250, 240, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(160, 120, 90, 0.2);
+      border-radius: 24px;
+      padding: 2.5rem;
+      width: 100%; max-width: 600px;
+      box-shadow: 0 12px 50px rgba(100, 70, 40, 0.15);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Corner ornaments on card */
+    .card::before, .card::after {
+      content: '';
+      position: absolute;
+      width: 40px; height: 40px;
+      border-color: rgba(160,120,90,0.3);
+      border-style: solid;
+    }
+    .card::before { top: 12px; left: 12px; border-width: 1.5px 0 0 1.5px; border-radius: 4px 0 0 0; }
+    .card::after  { bottom: 12px; right: 12px; border-width: 0 1.5px 1.5px 0; border-radius: 0 0 4px 0; }
+
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header .emoji { font-size: 2rem; margin-bottom: 0.3rem; }
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      color: #5c3d2e; font-size: 1.9rem; letter-spacing: 0.5px;
+    }
+    .header p { color: #a0785a; font-size: 0.85rem; margin-top: 0.4rem; }
+
+    .divider {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .divider span { color: #c8a87a; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, #c8a87a, transparent);
+    }
+
+    .section-label {
+      color: #8b6347; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .add-name-row { display: flex; gap: 0.6rem; margin-bottom: 1.2rem; }
+    .input-row { display: flex; gap: 0.6rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+
+    select, input {
+      background: rgba(236, 222, 201, 0.5);
+      border: 1px solid rgba(160, 120, 90, 0.3);
+      border-radius: 10px;
+      color: #5c3d2e; padding: 0.7rem 1rem;
+      font-size: 0.9rem; font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border 0.2s;
+    }
+    select:focus, input:focus { border-color: #a0785a; }
+    select { min-width: 150px; cursor: pointer; }
+    select option { background: #f5ede0; color: #5c3d2e; }
+    input { flex: 1; min-width: 150px; }
+    input::placeholder { color: rgba(92,61,46,0.35); }
+
+    .btn {
+      border: none; border-radius: 10px;
+      padding: 0.7rem 1.2rem; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: opacity 0.2s, transform 0.1s; white-space: nowrap;
+    }
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-add  { background: linear-gradient(135deg, #a0785a, #7a5230); color: #fff; }
+    .btn-name { background: linear-gradient(135deg, #c8a87a, #a0785a); color: #fff; flex-shrink: 0; }
+
+    .btn-clear {
+      background: transparent;
+      border: 1px solid rgba(160,120,90,0.3);
+      color: #a0785a; font-weight: 500;
+      margin-top: 1.2rem; width: 100%; padding: 0.65rem;
+      border-radius: 10px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem; cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .btn-clear:hover { background: rgba(180,80,80,0.08); color: #b05050; border-color: rgba(180,80,80,0.3); }
+
+    .ideas-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .empty {
+      color: #b8956a; text-align: center;
+      font-style: italic; padding: 2rem 0; font-size: 0.95rem;
+    }
+
+    .idea-item {
+      display: flex; align-items: center; gap: 0.85rem;
+      background: rgba(236, 222, 201, 0.4);
+      border: 1px solid rgba(160,120,90,0.15);
+      border-radius: 12px; padding: 0.85rem 1rem;
+      transition: background 0.2s;
+      animation: popIn 0.4s ease;
+    }
+    .idea-item:hover { background: rgba(200,168,122,0.2); }
+
+    .avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; color: #fff;
+      flex-shrink: 0; letter-spacing: 0.5px;
+    }
+
+    .idea-text { flex: 1; }
+    .idea-text .text { color: #3b2a1a; font-size: 0.95rem; }
+    .idea-text .author { font-size: 0.78rem; font-style: italic; margin-left: 0.4rem; }
+
+    .delete-btn {
+      background: none; border: none; color: rgba(92,61,46,0.25);
+      cursor: pointer; font-size: 1rem; padding: 0.3rem 0.5rem;
+      border-radius: 6px; transition: color 0.2s; line-height: 1;
+    }
+    .delete-btn:hover { color: #b05050; }
+
+    /* Confirm modal */
+    .confirm-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(60,40,20,0.35); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; z-index: 100;
+    }
+    .confirm-overlay.show { display: flex; }
+    .confirm-box {
+      background: #f5ede0; border: 1px solid rgba(160,120,90,0.3);
+      border-radius: 16px; padding: 2rem; text-align: center; max-width: 320px; width: 90%;
+    }
+    .confirm-box h3 { color: #5c3d2e; font-family: 'Playfair Display', serif; margin-bottom: 0.5rem; }
+    .confirm-box p { color: #a0785a; font-size: 0.88rem; margin-bottom: 1.5rem; }
+    .confirm-btns { display: flex; gap: 0.75rem; justify-content: center; }
+    .confirm-yes { background: rgba(180,80,80,0.12); border: 1px solid #c06060; color: #b05050; border-radius: 8px; padding: 0.55rem 1.2rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; transition: background 0.2s; }
+    .confirm-yes:hover { background: rgba(180,80,80,0.22); }
+    .confirm-no { background: rgba(160,120,90,0.12); border: 1px solid rgba(160,120,90,0.3); color: #5c3d2e; border-radius: 8px; padding: 0.55rem 1.2rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; transition: background 0.2s; }
+    .confirm-no:hover { background: rgba(160,120,90,0.22); }
+
+    @keyframes popIn {
+      0% { transform: scale(0.85); opacity: 0; }
+      60% { transform: scale(1.03); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      .side-deco { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left side decoration -->
+  <div class="side-deco left">
+    <div class="deco-leaf">🌿</div>
+    <div class="deco-line"></div>
+    <div class="deco-diamond"></div>
+    <div class="deco-dot"></div>
+    <div class="deco-circle"></div>
+    <div class="deco-line"></div>
+    <div class="deco-diamond"></div>
+    <div class="deco-dot"></div>
+    <div class="deco-circle"></div>
+    <div class="deco-line"></div>
+    <div class="deco-leaf">🌿</div>
+  </div>
+
+  <!-- Right side decoration -->
+  <div class="side-deco right">
+    <div class="deco-leaf">🌿</div>
+    <div class="deco-line"></div>
+    <div class="deco-diamond"></div>
+    <div class="deco-dot"></div>
+    <div class="deco-circle"></div>
+    <div class="deco-line"></div>
+    <div class="deco-diamond"></div>
+    <div class="deco-dot"></div>
+    <div class="deco-circle"></div>
+    <div class="deco-line"></div>
+    <div class="deco-leaf">🌿</div>
+  </div>
+
+  <div class="card">
+    <div class="header">
+      <div class="emoji">💡</div>
+      <h1>Group Idea Board</h1>
+      <p id="count">3 ideas shared</p>
+    </div>
+
+    <div class="divider"><span>✦ add name ✦</span></div>
+    <p class="section-label">Your name</p>
+    <div class="add-name-row">
+      <input type="text" id="newNameInput" placeholder="Type your name..." style="flex:1"/>
+      <button class="btn btn-name" onclick="addName()">+ Add Name</button>
+    </div>
+
+    <div class="divider"><span>✦ share idea ✦</span></div>
+    <p class="section-label">Your idea</p>
+    <div class="input-row">
+      <select id="nameSelect">
+        <option value="" disabled selected>Select your name...</option>
+        <option value="Nimal">Nimal</option>
+        <option value="Sara">Sara</option>
+        <option value="Alex">Alex</option>
+        <option value="Jamie">Jamie</option>
+        <option value="Priya">Priya</option>
+      </select>
+      <input type="text" id="ideaInput" placeholder="Enter your idea here..."/>
+      <button class="btn btn-add" onclick="addIdea()">+ Add Idea</button>
+    </div>
+
+    <div class="divider"><span>✦ ideas ✦</span></div>
+    <div class="ideas-list" id="ideasList"></div>
+
+    <button class="btn-clear" onclick="confirmClear()">🗑 Clear All Ideas</button>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <h3>Clear All Ideas?</h3>
+      <p>This will remove every idea from the board and cannot be undone.</p>
+      <div class="confirm-btns">
+        <button class="confirm-yes" onclick="clearAll()">Yes, Clear</button>
+        <button class="confirm-no" onclick="closeConfirm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TAN_COLORS = ["#a0785a","#8b6347","#c8a87a","#7a5230","#b8956a","#6b4c35","#d4b896"];
+    let colorIndex = 0;
+    const nameColors = {
+      Nimal: "#a0785a", Sara: "#8b6347", Alex: "#c8a87a", Jamie: "#7a5230", Priya: "#b8956a"
+    };
+
+    let ideas = [
+      { id: 1, text: "Build a study planner", author: "Nimal" },
+      { id: 2, text: "Start a podcast", author: "Sara" },
+      { id: 3, text: "Organize a coding workshop", author: "Alex" },
+    ];
+
+    function getColor(name) {
+      if (!nameColors[name]) {
+        nameColors[name] = TAN_COLORS[colorIndex % TAN_COLORS.length];
+        colorIndex++;
+      }
+      return nameColors[name];
+    }
+
+    function render() {
+      const list = document.getElementById("ideasList");
+      const count = document.getElementById("count");
+      count.textContent = `${ideas.length} idea${ideas.length !== 1 ? "s" : ""} shared`;
+      list.innerHTML = "";
+      if (ideas.length === 0) {
+        list.innerHTML = `<p class="empty">No ideas yet — be the first!</p>`;
+        return;
+      }
+      ideas.forEach(idea => {
+        const color = getColor(idea.author);
+        const initials = idea.author.slice(0, 2).toUpperCase();
+        const item = document.createElement("div");
+        item.className = "idea-item";
+        item.innerHTML = `
+          <div class="avatar" style="background:${color}">${initials}</div>
+          <div class="idea-text">
+            <span class="text">${idea.text}</span>
+            <span class="author" style="color:${color}">— ${idea.author}</span>
+          </div>
+          <button class="delete-btn" onclick="deleteIdea(${idea.id})" title="Remove">✕</button>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function addName() {
+      const input = document.getElementById("newNameInput");
+      const name = input.value.trim();
+      if (!name) return;
+      const select = document.getElementById("nameSelect");
+      const exists = Array.from(select.options).some(o => o.value === name);
+      if (!exists) {
+        const opt = document.createElement("option");
+        opt.value = name; opt.textContent = name;
+        select.appendChild(opt);
+      }
+      select.value = name;
+      input.value = "";
+    }
+
+    function addIdea() {
+      const name = document.getElementById("nameSelect").value;
+      const text = document.getElementById("ideaInput").value.trim();
+      if (!name || !text) return;
+      ideas.push({ id: Date.now(), text, author: name });
+      document.getElementById("ideaInput").value = "";
+      render();
+    }
+
+    function deleteIdea(id) {
+      ideas = ideas.filter(i => i.id !== id);
+      render();
+    }
+
+    function confirmClear() {
+      if (ideas.length === 0) return;
+      document.getElementById("confirmOverlay").classList.add("show");
+    }
+
+    function closeConfirm() {
+      document.getElementById("confirmOverlay").classList.remove("show");
+    }
+
+    function clearAll() {
+      ideas = [];
+      closeConfirm();
+      render();
+    }
+
+    document.getElementById("ideaInput").addEventListener("keydown", e => { if (e.key === "Enter") addIdea(); });
+    document.getElementById("newNameInput").addEventListener("keydown", e => { if (e.key === "Enter") addName(); });
+
+    render();
+  </script>
+</body>
+</html>
