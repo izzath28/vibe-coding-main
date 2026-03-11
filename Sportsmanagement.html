@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SportBook LK — Sri Lanka Sports Center Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#00c853;--green-dark:#007a33;--green-light:#b9f6ca;
+  --dark:#0a0f0d;--dark2:#121a14;--dark3:#1c2b1f;
+  --card:#182218;--card2:#1f2e22;
+  --text:#f0f7f1;--muted:#6b8f72;--border:#2a3d2d;
+  --gold:#ffd600;--red:#ff3d3d;
+  --radius:16px;--shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--dark2)}
+::-webkit-scrollbar-thumb{background:var(--green-dark);border-radius:3px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;
+    background:rgba(10,15,13,0.85);backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);padding:0 40px;height:64px;
+    display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;
+          background:linear-gradient(135deg,var(--green),var(--gold));
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+.nav-flag{font-size:1.2rem}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-links a{color:var(--muted);font-size:0.88rem;font-weight:700;padding:7px 16px;
+             border-radius:8px;text-decoration:none;transition:all 0.2s;letter-spacing:0.5px;text-transform:uppercase}
+.nav-links a:hover,.nav-links a.active{color:var(--green);background:rgba(0,200,83,0.08)}
+.nav-book-btn{background:var(--green);color:#000;font-weight:800;font-size:0.85rem;
+              padding:9px 20px;border-radius:10px;text-decoration:none;transition:all 0.2s;
+              letter-spacing:0.5px;text-transform:uppercase}
+.nav-book-btn:hover{background:var(--green-dark);color:#fff;transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;padding:100px 40px 60px}
+.hero-bg{position:absolute;inset:0;
+         background:radial-gradient(ellipse 80% 60% at 50% 80%,rgba(0,200,83,0.12) 0%,transparent 70%),
+                    linear-gradient(180deg,var(--dark) 0%,var(--dark2) 100%)}
+.hero-grid{position:absolute;inset:0;opacity:0.04;
+           background-image:linear-gradient(var(--green) 1px,transparent 1px),
+                            linear-gradient(90deg,var(--green) 1px,transparent 1px);
+           background-size:60px 60px}
+.hero-content{position:relative;text-align:center;max-width:800px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;
+            background:rgba(0,200,83,0.12);border:1px solid rgba(0,200,83,0.3);
+            color:var(--green);font-size:0.8rem;font-weight:800;letter-spacing:1.5px;
+            text-transform:uppercase;padding:6px 16px;border-radius:99px;margin-bottom:24px;
+            animation:fadeDown 0.6s ease both}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,8vw,7rem);
+         line-height:0.95;letter-spacing:2px;margin-bottom:20px;
+         animation:fadeDown 0.6s 0.1s ease both}
+.hero h1 .accent{color:var(--green)}
+.hero h1 .gold{color:var(--gold)}
+.hero p{font-size:1.1rem;color:var(--muted);max-width:520px;margin:0 auto 36px;
+        line-height:1.6;animation:fadeDown 0.6s 0.2s ease both;font-weight:600}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+              animation:fadeDown 0.6s 0.3s ease both}
+.btn-hero{padding:14px 32px;border-radius:12px;font-family:'Nunito',sans-serif;
+          font-weight:800;font-size:1rem;border:none;cursor:pointer;transition:all 0.2s;
+          text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-hero-primary{background:var(--green);color:#000}
+.btn-hero-primary:hover{background:#00e65e;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,200,83,0.4)}
+.btn-hero-ghost{background:transparent;color:var(--text);border:2px solid var(--border)}
+.btn-hero-ghost:hover{border-color:var(--green);color:var(--green)}
+.hero-stats{display:flex;gap:32px;justify-content:center;margin-top:48px;
+            animation:fadeDown 0.6s 0.4s ease both}
+.hero-stat{text-align:center}
+.hero-stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--green);letter-spacing:1px}
+.hero-stat-label{font-size:0.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+
+/* SECTION */
+.section{padding:80px 40px;max-width:1200px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:48px}
+.section-tag{font-size:0.75rem;font-weight:800;color:var(--green);letter-spacing:2px;
+             text-transform:uppercase;margin-bottom:10px;display:block}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4vw,3.5rem);
+               letter-spacing:1px;line-height:1.05}
+.section-sub{color:var(--muted);font-size:0.95rem;margin-top:10px;font-weight:600}
+
+/* SPORTS FILTER */
+.sports-filter{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:40px}
+.sport-pill{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:99px;
+            background:var(--card);border:1.5px solid var(--border);color:var(--muted);
+            font-family:'Nunito',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;
+            transition:all 0.2s;letter-spacing:0.3px}
+.sport-pill:hover{border-color:var(--green);color:var(--green)}
+.sport-pill.active{background:var(--green);border-color:var(--green);color:#000}
+.sport-pill span{font-size:1.1rem}
+
+/* CENTERS GRID */
+.centers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+.center-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);
+             overflow:hidden;transition:all 0.3s;cursor:pointer;position:relative}
+.center-card:hover{border-color:var(--green);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,200,83,0.15)}
+.center-card-img{height:180px;display:flex;align-items:center;justify-content:center;
+                  font-size:4rem;position:relative;overflow:hidden}
+.center-card-body{padding:20px}
+.center-name{font-weight:800;font-size:1.05rem;margin-bottom:4px}
+.center-location{color:var(--muted);font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:4px}
+.center-sports{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.sport-tag{background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.2);
+           color:var(--green);font-size:0.72rem;font-weight:800;padding:3px 10px;
+           border-radius:99px;text-transform:uppercase;letter-spacing:0.5px}
+.center-meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;
+             padding-top:12px;border-top:1px solid var(--border)}
+.center-price{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--gold);letter-spacing:0.5px}
+.center-price span{font-family:'Nunito',sans-serif;font-size:0.72rem;color:var(--muted);font-weight:600}
+.btn-book{background:var(--green);color:#000;font-weight:800;font-size:0.82rem;
+          padding:8px 18px;border-radius:8px;border:none;cursor:pointer;transition:all 0.2s}
+.btn-book:hover{background:#00e65e;transform:scale(1.04)}
+.available-badge{position:absolute;top:12px;right:12px;background:rgba(0,200,83,0.9);
+                 color:#000;font-size:0.7rem;font-weight:800;padding:4px 10px;border-radius:99px}
+.full-badge{background:rgba(255,61,61,0.9);color:#fff}
+
+/* BOOKING MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);
+               z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;
+               opacity:0;pointer-events:none;transition:opacity 0.3s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--dark2);border:1.5px solid var(--border);border-radius:20px;
+       width:100%;max-width:560px;max-height:90vh;overflow-y:auto;
+       transform:translateY(20px);transition:transform 0.3s;position:relative}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{padding:24px 28px 0;display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:1px}
+.modal-close{background:var(--card);border:1px solid var(--border);color:var(--muted);
+             width:36px;height:36px;border-radius:99px;cursor:pointer;font-size:1.1rem;
+             display:grid;place-items:center;transition:all 0.2s}
+.modal-close:hover{color:var(--red);border-color:var(--red)}
+.modal-body{padding:24px 28px 28px}
+.modal-center-info{display:flex;align-items:center;gap:14px;padding:16px;
+                   background:var(--card);border-radius:12px;margin-bottom:24px}
+.modal-center-icon{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;font-size:1.8rem}
+.modal-center-name{font-weight:800;font-size:1rem}
+.modal-center-loc{color:var(--muted);font-size:0.82rem;font-weight:600}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:0.78rem;font-weight:800;color:var(--muted);
+            text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.form-control{width:100%;padding:12px 16px;background:var(--card);border:1.5px solid var(--border);
+              border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.92rem;
+              font-weight:600;outline:none;transition:border-color 0.2s}
+.form-control:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,200,83,0.12)}
+.form-control option{background:var(--dark2)}
+
+/* TIME SLOTS */
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.slot-btn{padding:10px 8px;background:var(--card);border:1.5px solid var(--border);
+          border-radius:9px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.82rem;
+          font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center}
+.slot-btn:hover:not(.taken){border-color:var(--green);color:var(--green)}
+.slot-btn.selected{background:var(--green);border-color:var(--green);color:#000}
+.slot-btn.taken{background:rgba(255,61,61,0.08);border-color:rgba(255,61,61,0.2);
+                color:rgba(255,61,61,0.5);cursor:not-allowed;text-decoration:line-through}
+
+.btn-confirm{width:100%;padding:14px;background:var(--green);color:#000;font-family:'Nunito',sans-serif;
+             font-weight:900;font-size:1rem;border:none;border-radius:12px;cursor:pointer;
+             transition:all 0.2s;margin-top:20px;letter-spacing:0.3px}
+.btn-confirm:hover{background:#00e65e;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,200,83,0.3)}
+.btn-confirm:disabled{background:var(--card);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
+
+/* SUCCESS */
+.success-screen{text-align:center;padding:20px 0}
+.success-icon{font-size:4rem;margin-bottom:16px;animation:bounce 0.6s ease}
+.success-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--green);letter-spacing:1px}
+.success-detail{color:var(--muted);font-size:0.9rem;margin-top:10px;line-height:1.6;font-weight:600}
+.booking-ref{background:var(--card);border:1px solid var(--green);border-radius:10px;
+             padding:14px;margin:16px 0;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;
+             color:var(--gold);letter-spacing:2px}
+
+/* MY BOOKINGS */
+.bookings-list{display:flex;flex-direction:column;gap:12px}
+.booking-item{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);
+              padding:18px 20px;display:flex;align-items:center;gap:16px;transition:border-color 0.2s}
+.booking-item:hover{border-color:var(--green)}
+.booking-icon{width:48px;height:48px;border-radius:12px;background:var(--dark3);
+              display:grid;place-items:center;font-size:1.6rem;flex-shrink:0}
+.booking-info{flex:1}
+.booking-name{font-weight:800;font-size:0.98rem}
+.booking-meta{color:var(--muted);font-size:0.82rem;font-weight:600;margin-top:3px}
+.booking-badge{padding:4px 12px;border-radius:99px;font-size:0.72rem;font-weight:800;text-transform:uppercase}
+.badge-confirmed{background:rgba(0,200,83,0.12);color:var(--green);border:1px solid rgba(0,200,83,0.3)}
+.badge-upcoming{background:rgba(255,214,0,0.12);color:var(--gold);border:1px solid rgba(255,214,0,0.3)}
+.cancel-btn{background:none;border:1px solid var(--border);color:var(--muted);font-size:0.78rem;
+            font-weight:700;padding:6px 12px;border-radius:7px;cursor:pointer;transition:all 0.2s}
+.cancel-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
+       background:var(--green);color:#000;padding:12px 24px;border-radius:99px;
+       font-size:0.88rem;font-weight:800;transition:transform 0.3s;z-index:9999;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* PAGE SECTIONS */
+.page{display:none}
+.page.active{display:block}
+
+/* FOOTER */
+footer{background:var(--dark2);border-top:1px solid var(--border);padding:40px;
+       text-align:center;color:var(--muted);font-size:0.85rem;font-weight:600}
+footer .footer-brand{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;
+                     background:linear-gradient(135deg,var(--green),var(--gold));
+                     -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+
+/* ANIMATIONS */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 24px;color:var(--muted)}
+.empty-icon{font-size:3.5rem;margin-bottom:14px}
+.empty-text{font-size:0.95rem;font-weight:600}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .nav-links{display:none}
+  .hero{padding:80px 20px 40px}
+  .section{padding:60px 20px}
+  .centers-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .slots-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-stats{gap:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-flag">🇱🇰</span>
+    <div class="nav-logo">SportBook LK</div>
+  </div>
+  <div class="nav-links">
+    <a href="#" onclick="showPage('home')" class="active" id="nav-home">Home</a>
+    <a href="#" onclick="showPage('centers')" id="nav-centers">Centers</a>
+    <a href="#" onclick="showPage('mybookings')" id="nav-mybookings">My Bookings</a>
+  </div>
+  <a href="#" class="nav-book-btn" onclick="showPage('centers')">Book Now →</a>
+</nav>
+
+<!-- ════════════════ HOME PAGE ════════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🇱🇰 Sri Lanka's #1 Sports Booking Platform</div>
+      <h1>PLAY YOUR<br/><span class="accent">SPORT.</span> YOUR<br/><span class="gold">WAY.</span></h1>
+      <p>Book courts, fields & facilities at top sports centers across Sri Lanka — instantly, easily, anytime.</p>
+      <div class="hero-actions">
+        <a class="btn-hero btn-hero-primary" href="#" onclick="showPage('centers')">⚡ Book a Court</a>
+        <a class="btn-hero btn-hero-ghost" href="#" onclick="showPage('mybookings')">📋 My Bookings</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-num">24+</div><div class="hero-stat-label">Sports Centers</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">9</div><div class="hero-stat-label">Sports</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">12</div><div class="hero-stat-label">Cities</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">500+</div><div class="hero-stat-label">Bookings Made</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPORTS SECTION -->
+  <div style="padding:60px 40px;max-width:1200px;margin:0 auto">
+    <div class="section-header">
+      <span class="section-tag">What We Offer</span>
+      <div class="section-title">PICK YOUR SPORT</div>
+      <div class="section-sub">From cricket to swimming — we've got every sport covered across Sri Lanka</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px">
+      <div class="sport-card-home" onclick="filterAndGo('Cricket')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">🏏</div>
+        <div style="font-weight:800;font-size:0.88rem">Cricket</div>
+      </div>
+      <div onclick="filterAndGo('Football')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">⚽</div>
+        <div style="font-weight:800;font-size:0.88rem">Football</div>
+      </div>
+      <div onclick="filterAndGo('Badminton')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">🏸</div>
+        <div style="font-weight:800;font-size:0.88rem">Badminton</div>
+      </div>
+      <div onclick="filterAndGo('Swimming')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">🏊</div>
+        <div style="font-weight:800;font-size:0.88rem">Swimming</div>
+      </div>
+      <div onclick="filterAndGo('Tennis')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">🎾</div>
+        <div style="font-weight:800;font-size:0.88rem">Tennis</div>
+      </div>
+      <div onclick="filterAndGo('Basketball')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">🏀</div>
+        <div style="font-weight:800;font-size:0.88rem">Basketball</div>
+      </div>
+      <div onclick="filterAndGo('Volleyball')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">🏐</div>
+        <div style="font-weight:800;font-size:0.88rem">Volleyball</div>
+      </div>
+      <div onclick="filterAndGo('Rugby')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">🏉</div>
+        <div style="font-weight:800;font-size:0.88rem">Rugby</div>
+      </div>
+      <div onclick="filterAndGo('Table Tennis')" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--green)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="font-size:2.5rem;margin-bottom:10px">🏓</div>
+        <div style="font-weight:800;font-size:0.88rem">Table Tennis</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ CENTERS PAGE ════════════════ -->
+<div id="page-centers" class="page" style="padding-top:80px">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag">Browse & Book</span>
+      <div class="section-title">SPORTS CENTERS</div>
+      <div class="section-sub">Find and book your perfect sports facility across Sri Lanka</div>
+    </div>
+
+    <!-- FILTERS -->
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:24px">
+      <input id="search-input" type="text" placeholder="🔍  Search centers or cities…"
+        style="flex:1;min-width:220px;padding:12px 18px;background:var(--card);border:1.5px solid var(--border);
+               border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.9rem;
+               font-weight:600;outline:none"
+        oninput="renderCenters()" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'"/>
+      <select id="city-filter" onchange="renderCenters()"
+        style="padding:12px 16px;background:var(--card);border:1.5px solid var(--border);
+               border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:600;outline:none">
+        <option value="">All Cities</option>
+        <option>Colombo</option><option>Kandy</option><option>Galle</option>
+        <option>Jaffna</option><option>Negombo</option><option>Kurunegala</option>
+        <option>Anuradhapura</option><option>Ratnapura</option><option>Matara</option>
+      </select>
+    </div>
+
+    <div class="sports-filter" id="sports-filter">
+      <div class="sport-pill active" onclick="setSportFilter('All',this)"><span>🏟️</span> All Sports</div>
+      <div class="sport-pill" onclick="setSportFilter('Cricket',this)"><span>🏏</span> Cricket</div>
+      <div class="sport-pill" onclick="setSportFilter('Football',this)"><span>⚽</span> Football</div>
+      <div class="sport-pill" onclick="setSportFilter('Badminton',this)"><span>🏸</span> Badminton</div>
+      <div class="sport-pill" onclick="setSportFilter('Swimming',this)"><span>🏊</span> Swimming</div>
+      <div class="sport-pill" onclick="setSportFilter('Tennis',this)"><span>🎾</span> Tennis</div>
+      <div class="sport-pill" onclick="setSportFilter('Basketball',this)"><span>🏀</span> Basketball</div>
+      <div class="sport-pill" onclick="setSportFilter('Volleyball',this)"><span>🏐</span> Volleyball</div>
+      <div class="sport-pill" onclick="setSportFilter('Rugby',this)"><span>🏉</span> Rugby</div>
+      <div class="sport-pill" onclick="setSportFilter('Table Tennis',this)"><span>🏓</span> Table Tennis</div>
+    </div>
+
+    <div class="centers-grid" id="centers-grid"></div>
+  </div>
+</div>
+
+<!-- ════════════════ MY BOOKINGS PAGE ════════════════ -->
+<div id="page-mybookings" class="page" style="padding-top:80px">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-tag">Your Activity</span>
+      <div class="section-title">MY BOOKINGS</div>
+      <div class="section-sub">Manage all your sport center reservations</div>
+    </div>
+    <div id="bookings-container"></div>
+  </div>
+</div>
+
+<!-- ════════════════ BOOKING MODAL ════════════════ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Book a Slot</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-brand">SportBook LK</div>
+  <p>🇱🇰 Connecting Sri Lanka through sport · Built for the campus mini project</p>
+  <p style="margin-top:6px;font-size:0.78rem;opacity:0.5">All bookings are locally stored · No external services used</p>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+// ════════════════ DATA ════════════════
+const CENTERS = [
+  {id:1,name:"Sugathadasa Indoor Stadium",city:"Colombo",location:"Sugathadasa, Colombo 10",
+   sports:["Badminton","Volleyball","Basketball","Table Tennis"],emoji:"🏟️",
+   color:"linear-gradient(135deg,#1a3a2a,#0d2018)",price:1500,rating:4.8,slots:generateSlots()},
+  {id:2,name:"Colts Cricket Grounds",city:"Colombo",location:"Maitland Place, Colombo 7",
+   sports:["Cricket"],emoji:"🏏",color:"linear-gradient(135deg,#1a2a1a,#0d1a0d)",price:5000,rating:4.6,slots:generateSlots()},
+  {id:3,name:"Nondescripts Cricket Club",city:"Colombo",location:"Maitland Crescent, Colombo 7",
+   sports:["Cricket","Tennis"],emoji:"🏏",color:"linear-gradient(135deg,#2a1a0d,#1a1005)",price:4500,rating:4.5,slots:generateSlots()},
+  {id:4,name:"Thurstan College Ground",city:"Colombo",location:"Thurstan Road, Colombo 3",
+   sports:["Football","Cricket","Athletics"],emoji:"⚽",color:"linear-gradient(135deg,#0d1a2a,#050d1a)",price:2500,rating:4.3,slots:generateSlots()},
+  {id:5,name:"Kandy Esplanade Grounds",city:"Kandy",location:"Esplanade Road, Kandy",
+   sports:["Football","Rugby","Cricket"],emoji:"🏉",color:"linear-gradient(135deg,#2a0d0d,#1a0505)",price:3000,rating:4.7,slots:generateSlots()},
+  {id:6,name:"Kandy SC Swimming Pool",city:"Kandy",location:"Sirimavo Bandaranaike Mw, Kandy",
+   sports:["Swimming"],emoji:"🏊",color:"linear-gradient(135deg,#0d1a2a,#051525)",price:800,rating:4.4,slots:generateSlots()},
+  {id:7,name:"Galle International Stadium",city:"Galle",location:"Galle Fort Road, Galle",
+   sports:["Cricket"],emoji:"🏏",color:"linear-gradient(135deg,#1a2a0d,#0d1a05)",price:6000,rating:4.9,slots:generateSlots()},
+  {id:8,name:"Racquet Club Colombo",city:"Colombo",location:"Racecourse Ave, Colombo 7",
+   sports:["Tennis","Badminton","Squash"],emoji:"🎾",color:"linear-gradient(135deg,#2a1a2a,#1a0d1a)",price:2000,rating:4.6,slots:generateSlots()},
+  {id:9,name:"Jaffna Central College Ground",city:"Jaffna",location:"Stanley Road, Jaffna",
+   sports:["Football","Volleyball","Basketball"],emoji:"⚽",color:"linear-gradient(135deg,#1a1a2a,#0d0d1a)",price:1500,rating:4.2,slots:generateSlots()},
+  {id:10,name:"Negombo Sports Complex",city:"Negombo",location:"St. Joseph's Street, Negombo",
+   sports:["Swimming","Badminton","Volleyball"],emoji:"🏊",color:"linear-gradient(135deg,#0d2a2a,#051a1a)",price:1200,rating:4.4,slots:generateSlots()},
+  {id:11,name:"Kurunegala Wayamba Ground",city:"Kurunegala",location:"Kurunegala",
+   sports:["Cricket","Football","Rugby"],emoji:"🏏",color:"linear-gradient(135deg,#2a2a0d,#1a1a05)",price:3500,rating:4.3,slots:generateSlots()},
+  {id:12,name:"SSC Grounds",city:"Colombo",location:"Maitland Place, Colombo 7",
+   sports:["Cricket","Tennis","Swimming"],emoji:"🏊",color:"linear-gradient(135deg,#1a0d2a,#0d051a)",price:4000,rating:4.7,slots:generateSlots()},
+  {id:13,name:"Matara Uyanwatte Stadium",city:"Matara",location:"Uyanwatte, Matara",
+   sports:["Cricket","Football"],emoji:"🏟️",color:"linear-gradient(135deg,#2a1a0d,#1a0d05)",price:2000,rating:4.1,slots:generateSlots()},
+  {id:14,name:"Anuradhapura Stadium",city:"Anuradhapura",location:"New Town, Anuradhapura",
+   sports:["Football","Volleyball","Basketball","Table Tennis"],emoji:"🏀",color:"linear-gradient(135deg,#0d2a1a,#051a0d)",price:1000,rating:4.0,slots:generateSlots()},
+  {id:15,name:"Ratnapura Sports Center",city:"Ratnapura",location:"Ratnapura Town",
+   sports:["Badminton","Table Tennis","Volleyball"],emoji:"🏸",color:"linear-gradient(135deg,#1a2a1a,#0d1a0d)",price:900,rating:3.9,slots:generateSlots()},
+];
+
+function generateSlots(){
+  const base=["06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"];
+  return base.map(t=>({time:t,taken:Math.random()<0.3}));
+}
+
+let activeSport="All";
+let myBookings=JSON.parse(localStorage.getItem('sportbookings')||'[]');
+let selectedCenter=null;
+let selectedSlot=null;
+
+// ════════════════ NAVIGATION ════════════════
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('nav-'+page).classList.add('active');
+  if(page==='centers') renderCenters();
+  if(page==='mybookings') renderBookings();
+  window.scrollTo({top:0,behavior:'smooth'});
+  return false;
+}
+
+function filterAndGo(sport){
+  activeSport=sport;
+  showPage('centers');
+  setTimeout(()=>{
+    document.querySelectorAll('.sport-pill').forEach(p=>{
+      p.classList.toggle('active',p.textContent.trim().includes(sport));
+    });
+    renderCenters();
+  },100);
+}
+
+// ════════════════ CENTERS ════════════════
+function setSportFilter(sport, el){
+  activeSport=sport;
+  document.querySelectorAll('.sport-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderCenters();
+}
+
+function renderCenters(){
+  const search=(document.getElementById('search-input')?.value||'').toLowerCase();
+  const city=document.getElementById('city-filter')?.value||'';
+  let filtered=CENTERS.filter(c=>{
+    const matchSport=activeSport==='All'||c.sports.includes(activeSport);
+    const matchSearch=!search||c.name.toLowerCase().includes(search)||c.city.toLowerCase().includes(search)||c.location.toLowerCase().includes(search);
+    const matchCity=!city||c.city===city;
+    return matchSport&&matchSearch&&matchCity;
+  });
+  const grid=document.getElementById('centers-grid');
+  if(!filtered.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🏟️</div><div class="empty-text">No centers found. Try a different filter.</div></div>`;
+    return;
+  }
+  grid.innerHTML=filtered.map(c=>{
+    const avail=c.slots.filter(s=>!s.taken).length;
+    const isFull=avail===0;
+    const stars='⭐'.repeat(Math.round(c.rating));
+    return`<div class="center-card" onclick="openBooking(${c.id})">
+      <div class="center-card-img" style="background:${c.color}">
+        <span>${c.emoji}</span>
+        <span class="available-badge ${isFull?'full-badge':''}">${isFull?'Full':avail+' slots'}</span>
+      </div>
+      <div class="center-card-body">
+        <div class="center-name">${c.name}</div>
+        <div class="center-location">📍 ${c.location}</div>
+        <div class="center-sports">${c.sports.map(s=>`<span class="sport-tag">${s}</span>`).join('')}</div>
+        <div class="center-meta">
+          <div><div class="center-price">Rs. ${c.price.toLocaleString()} <span>/ hour</span></div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:2px">${c.rating} ${stars}</div></div>
+          <button class="btn-book" onclick="event.stopPropagation();openBooking(${c.id})">${isFull?'Waitlist':'Book Now'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════ BOOKING MODAL ════════════════
+function openBooking(centerId){
+  selectedCenter=CENTERS.find(c=>c.id===centerId);
+  selectedSlot=null;
+  const modal=document.getElementById('modal');
+  document.getElementById('modal-title').textContent='Book a Slot';
+  document.getElementById('modal-body').innerHTML=buildBookingForm();
+  modal.classList.add('open');
+}
+
+function buildBookingForm(){
+  const c=selectedCenter;
+  const today=new Date().toISOString().split('T')[0];
+  return`
+  <div class="modal-center-info">
+    <div class="modal-center-icon" style="background:${c.color}">${c.emoji}</div>
+    <div>
+      <div class="modal-center-name">${c.name}</div>
+      <div class="modal-center-loc">📍 ${c.location}</div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input class="form-control" id="f-name" placeholder="Enter your name" type="text"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input class="form-control" id="f-phone" placeholder="07X XXX XXXX" type="tel"/>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Select Sport</label>
+      <select class="form-control" id="f-sport">
+        ${c.sports.map(s=>`<option value="${s}">${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input class="form-control" id="f-date" type="date" min="${today}" value="${today}"/>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Select Time Slot</label>
+    <div class="slots-grid" id="slots-grid">
+      ${c.slots.map((s,i)=>`
+        <button class="slot-btn ${s.taken?'taken':''}" onclick="${s.taken?'':'selectSlot(this,\''+s.time+'\')'}">
+          ${s.time}${s.taken?' ✗':''}
+        </button>
+      `).join('')}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Number of Players</label>
+    <select class="form-control" id="f-players">
+      ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}">${n} player${n>1?'s':''}</option>`).join('')}
+    </select>
+  </div>
+
+  <div style="background:var(--card);border-radius:10px;padding:14px;margin-bottom:4px">
+    <div style="display:flex;justify-content:space-between;color:var(--muted);font-size:0.85rem;font-weight:700">
+      <span>Facility Rate</span><span>Rs. ${c.price.toLocaleString()} / hr</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1rem;margin-top:8px">
+      <span>Total (1 hour)</span><span style="color:var(--gold)">Rs. ${c.price.toLocaleString()}</span>
+    </div>
+  </div>
+
+  <button class="btn-confirm" id="confirm-btn" onclick="confirmBooking()" disabled>
+    Select a time slot to continue →
+  </button>`;
+}
+
+function selectSlot(btn, time){
+  document.querySelectorAll('.slot-btn:not(.taken)').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedSlot=time;
+  const cb=document.getElementById('confirm-btn');
+  cb.disabled=false;
+  cb.textContent=`✅ Confirm Booking at ${time}`;
+}
+
+function confirmBooking(){
+  const name=document.getElementById('f-name').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  const sport=document.getElementById('f-sport').value;
+  const date=document.getElementById('f-date').value;
+  const players=document.getElementById('f-players').value;
+  if(!name){showToast('⚠️ Please enter your name');return;}
+  if(!phone){showToast('⚠️ Please enter your phone number');return;}
+  if(!selectedSlot){showToast('⚠️ Please select a time slot');return;}
+  if(!date){showToast('⚠️ Please select a date');return;}
+
+  const ref='SB'+Date.now().toString().slice(-6);
+  const booking={
+    id:ref,center:selectedCenter.name,location:selectedCenter.location,
+    emoji:selectedCenter.emoji,sport,date,time:selectedSlot,
+    name,phone,players,price:selectedCenter.price,status:'Confirmed',
+    bookedAt:new Date().toLocaleString()
+  };
+  myBookings.unshift(booking);
+  localStorage.setItem('sportbookings',JSON.stringify(myBookings));
+
+  // Mark slot as taken
+  const slot=selectedCenter.slots.find(s=>s.time===selectedSlot);
+  if(slot) slot.taken=true;
+
+  document.getElementById('modal-body').innerHTML=`
+    <div class="success-screen">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">BOOKING CONFIRMED!</div>
+      <div class="success-detail">
+        Your slot at <strong>${selectedCenter.name}</strong> has been booked successfully.
+      </div>
+      <div class="booking-ref">REF: ${ref}</div>
+      <div style="background:var(--card);border-radius:12px;padding:16px;text-align:left;margin-bottom:16px">
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.88rem;font-weight:600">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Sport</span><span>${sport}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Date</span><span>${date}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Time</span><span>${selectedSlot}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Players</span><span>${players}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Amount</span><span style="color:var(--gold)">Rs. ${selectedCenter.price.toLocaleString()}</span></div>
+        </div>
+      </div>
+      <button class="btn-confirm" onclick="closeModal();showPage('mybookings')">View My Bookings →</button>
+    </div>`;
+  document.getElementById('modal-title').textContent='';
+  showToast('🎉 Booking confirmed!');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  selectedCenter=null; selectedSlot=null;
+}
+document.getElementById('modal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+
+// ════════════════ MY BOOKINGS ════════════════
+function renderBookings(){
+  const cont=document.getElementById('bookings-container');
+  if(!myBookings.length){
+    cont.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No bookings yet. <a href="#" onclick="showPage('centers')" style="color:var(--green)">Book your first slot →</a></div></div>`;
+    return;
+  }
+  cont.innerHTML=`<div class="bookings-list">${myBookings.map((b,i)=>`
+    <div class="booking-item" id="booking-${b.id}">
+      <div class="booking-icon">${b.emoji}</div>
+      <div class="booking-info">
+        <div class="booking-name">${b.center}</div>
+        <div class="booking-meta">📍 ${b.location} &nbsp;·&nbsp; 🏆 ${b.sport} &nbsp;·&nbsp; 📅 ${b.date} &nbsp;·&nbsp; ⏰ ${b.time}</div>
+        <div class="booking-meta" style="margin-top:4px">👤 ${b.name} &nbsp;·&nbsp; 👥 ${b.players} players &nbsp;·&nbsp; 💵 Rs. ${b.price.toLocaleString()}</div>
+        <div style="margin-top:6px">
+          <span style="font-size:0.72rem;font-weight:800;color:var(--muted);margin-right:8px">REF: ${b.id}</span>
+          <span class="booking-badge badge-confirmed">${b.status}</span>
+        </div>
+      </div>
+      <button class="cancel-btn" onclick="cancelBooking('${b.id}')">Cancel</button>
+    </div>
+  `).join('')}</div>`;
+}
+
+function cancelBooking(id){
+  if(!confirm('Cancel this booking?')) return;
+  myBookings=myBookings.filter(b=>b.id!==id);
+  localStorage.setItem('sportbookings',JSON.stringify(myBookings));
+  renderBookings();
+  showToast('Booking cancelled.');
+}
+
+// ════════════════ TOAST ════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// INIT
+renderCenters();
+</script>
+</body>
+</html>
